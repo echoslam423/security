@@ -156,10 +156,59 @@ sshd的配置文件项
     .. ..
     Port                                     //定义端口
     Protocol 2                                          //SSH协议
+    ListenAddress                                //只接受ssh的IP地址
     PermitRootLogin no                                  //禁止root用户登录
     PermitEmptyPasswords no                              //禁止密码为空的用户登录
     UseDNS  no                                          //不解析客户机地址
     LoginGraceTime  1m                                  //登录限时
     MaxAuthTries  3                                      //每连接最多认证次数
+    PasswordAuthentication no                              //将此行yes改成no 禁止密码连接只能通过非对称性加密
     .. ..
     [root@proxy ~]# systemctl restart sshd
+ 
+ 配置ssh黑白名单
+    [root@proxy ~]# vim /etc/ssh/sshd_config
+    .. ..
+    AllowUsers zhangsan tom useradm@192.168.4.0/24            //定义账户白名单
+    ##DenyUsers  USER1  USER2                                //定义账户黑名单
+    ##DenyGroups  GROUP1 GROUP2                            //定义组黑名单
+    ##AllowGroups  GROUP1 GROUP2                            //定义组白名单
+    
+Selinux设置
+ 配置文件 /etc/selinux/config
+ 命令行设置 setenforce 0/1                       //模式切换 强制模式 宽松模式
+ 模式查看   getenforce
+ 
+ 查看selinux安全上下文
+    ls -Z    
+    ps aux -Z
+    ps -elfZ
+    
+    [root@mysql50 ~]# ls -Z /bin/ls
+    -rwxr-xr-x. root root system_u:object_r:bin_t:s0       /bin/ls
+ 安全上下文context
+      system_u:object_r:bin_t:s0
+      用户:角色:访问类型:选项
+      通常因访问类型限制被selinux拒绝
+ 
+ 修改工具
+    chcon  --help
+    [root@mysql50 ~]# chcon -t(type)  public_content_t(访问类型)  /var/ftp/...
+    
+    restorecon  --help
+    恢复所在位置的上下文
+    -R 第归修改
+    /.autorelabel
+    
+    cat /var/log/messages | grep setroubleshoot                    //再log文件信息查询selinx报告信息工具 se+trouble+shoot
+    sealert -l ea7824f2-af65-4d68-9995-67d787abca2a                //根据报错信息 执行系统命令 
+    semanage port -a -t http_port_t -p tcp 8089                    //根据提示信息 用命令修改访问类型
+    systemctl restart httpd
+    
+selinux bool值
+    查询bool值
+    getsebool -a | grep ...
+    
+    修改bool值
+    setsebool ftpd_full_access on
+    
