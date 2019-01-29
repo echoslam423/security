@@ -178,5 +178,16 @@
     [root@client ~]# curl -i -X GET  http://192.168.4.5            //正常
     [root@client ~]# curl -i -X HEAD http://192.168.4.5            //报错   
         
-        
-        
+ 防止buffer溢出       
+    当客户端连接服务器时，服务器会启用各种缓存，用来存放连接的状态信息。
+    如果攻击者发送大量的连接请求，而服务器不对缓存做限制的话，内存数据就有可能溢出（空间不足）。
+    修改Nginx配置文件，调整各种buffer参数，可以有效降低溢出风险。  
+    [root@proxy ~]# vim /usr/local/nginx/conf/nginx.conf
+    http{
+    client_body_buffer_size  1K;
+    client_header_buffer_size 1k;
+    client_max_body_size 1k;
+    large_client_header_buffers 2 1k;
+     … …
+    }
+    [root@proxy ~]# /usr/local/nginx/sbin/nginx -s reload
