@@ -250,7 +250,7 @@
     // 类型：host、net、port、portrange
     // 方向：src(源地址)、dst（目标地址）
     // 协议：tcp、udp、ip、wlan、arp、……
-    // 多个条件组合：and、or、not
+    // 多个条件组合：and、or、not （与/或/非）
   
   观察抓包的结果
     [root@proxy ~]#
@@ -261,10 +261,30 @@
     E..5..@.@......x...d.*..G.\p.1B.P.......PASS 123
   
   再次使用tcpdump抓包，使用-w选项可以将抓取的数据包另存为文件
-    [root@proxy ~]# tcpdump  -A  -w  ftp.cap  \
-    > host 192.168.4.5  and  tcp  port  21                            //抓包并保存
+    [root@proxy ~]# tcpdump  -A  -w  ftp.cap（文件必须是.cap） host 192.168.4.5  and  tcp  port  21            //抓包并保存
     
   tcpdump命令的-r选项，可以去读之前抓取的历史数据文件
     [root@proxy ~]# tcpdump  -A  -r  ftp.cap | egrep  '(USER|PASS)'    //分析数据包
+    
+  使用tcpdump命令抓包 
+    [root@proxy ~]# tcpdump  -A  host 192.168.4.5  and  tcp  port  80
+  真实机使用浏览器访问
+    [root@pc001 ~]# firefox  http://192.168.4.5         //根据提示输入用户名与密码
+  回到proxy查看抓包的数据结果
+    [root@proxy ~]# tcpdump -A host 192.168.4.5 and tcp port 80
+    tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+    listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+    … …
+    Authorization: Basic dG9tOjEyMzQ1Ng==
+    … …
+  查看base64编码内容
+    [root@proxy ~]# echo "dG9tOjEyMzQ1Ng==" | base64 -d
+    tom:123456
+    [root@proxy ~]# echo "tom:123456" | base64 
+    dG9tOjEyMzQ1Ngo=
+    
+ 抓取pop3服务
+    [root@proxy ~]# tcpdump -i lo(网卡端口）-A（可阅读的方式） tcp port 110
+    
     
     
