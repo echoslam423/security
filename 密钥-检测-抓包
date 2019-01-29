@@ -183,7 +183,8 @@
   检查192.168.4.100主机是否可以ping通
     [root@proxy ~]# nmap  -sP  192.168.4.100
     Starting Nmap 6.40 ( http://nmap.org ) at 2018-06-06 21:59 CST
-    mass_dns: warning: Unable to determine any DNS servers. Reverse DNS is disabled. Try using --system-dns or specify valid servers with --dns-servers
+    mass_dns: warning: Unable to determine any DNS servers. Reverse DNS is disabled. 
+    Try using --system-dns or specify valid servers with --dns-servers
     Nmap scan report for host3 (192.168.4.100)
     Host is up (0.00036s latency).
     MAC Address: 52:54:00:71:07:76 (QEMU Virtual NIC)
