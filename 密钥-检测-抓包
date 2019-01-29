@@ -1,4 +1,4 @@
-加密算法主要有以下几种分类：
+⚫加密算法主要有以下几种分类：
 
   1.为确保数据机密性算法：
     a) 对称加密算法(AES,DES)              //AES:Advanced(在前的,高级的) Encryption(加密） Standard（标准）
@@ -9,18 +9,18 @@
   2.为确保数据完整性算法：
     a) 信息摘要（MD5，SHA256，SHA512）
     
-检查文件的MD5校验和
+⚫检查文件的MD5校验和
   [root@proxy ~]# md5sum file?.txt                  //文件内容一致，则校验和也不变
     b92aa0f8aa5d5af5a47c6896283f3536  file1.txt
     b92aa0f8aa5d5af5a47c6896283f3536  file2.txt
     
-文件内容稍作改动，再次检查校验和，会发现校验和已大不相同 
+⚫文件内容稍作改动，再次检查校验和，会发现校验和已大不相同 
   [root@proxy ~]# echo "x" >> file1.txt
   [root@proxy ~]# md5sum file?.txt
     6be3efe71d8b4b1ed34ac45f4edd2ba7  file1.txt
     b92aa0f8aa5d5af5a47c6896283f3536  file2.txt
     
-使用GPG对称加密方式保护文件
+⚫使用GPG对称加密方式保护文件
   GnuPG是非常流行的加密软件，支持所有常见加密算法，并且开源免费使用
   
   GnuPG官网 http://www.gnupg.org/
@@ -29,12 +29,12 @@
   [root@proxy ~]# gpg --version                    //查看版本
   gpg (GnuPG) 2.0.22
   
-支持算法:
+  支持算法:
     密钥:RSA,ELG,DSA
     对称加密:3DES,CAST5,BLOWFISH,AES,.....
     散列:MD5,SHA1,......
     
-对称加密
+⚫对称加密
   加密操作:--symmetric(对称的) 选项 -c
   解密操作:--decrypt(解密)    选项 -d
       
@@ -48,7 +48,7 @@
   .. ..                                              //根据提示输入正确密码
   [root@proxyB ~]# cat file2.txt                      //查看解密后的文件
   
-非对称加密方式保护文件
+⚫非对称加密方式保护文件
   加密操作:--encrypt(加密） 选项 -e
   指定目标用户:--recipient(接受者) 选项 -r
   非对称加密/解密文件时，UserA（192.168.4.100）生成私钥与公钥，并把公钥发送给UserB（192.168.4.5），
@@ -97,7 +97,7 @@
       “UserA (UserA) <UserA@tarena.com>”
   [root@client ~]# cat love.txt                      //获得解密后的文件内容
   
-  使用GPG的签名机制，检查数据来源的正确性
+⚫使用GPG的签名机制，检查数据来源的正确性
   使用私钥签名的文件，是可以使用对应的公钥验证签名的，只要验证成功，则说明这个文件一定是出自对应的私钥签名，
   除非私钥被盗，否则一定能证明这个文件来自于某个人！
     分离式签名: --detach(分离)-sign  选项 -b
@@ -113,7 +113,7 @@
   gpg: 完好的签名，来自于“UserA (UserA) <UserA@tarena.com>”
   .. ..                          
   
-使用AIDE做入侵检测  
+⚫使用AIDE做入侵检测  
   Aide通过检查数据文件的权限、时间、大小、哈希值等，校验数据的完整性
   使用Aide需要在数据没有被破坏前，对数据完成初始化校验，生成校验数据库文件，在被攻击后，可以使用数据库文件，快速定位被人篡改的文件
 
@@ -168,7 +168,7 @@
   执行检测
     [root@proxy ~]# aide --check                            //检查哪些数据发生了变化
   
-扫描与抓包分析 
+⚫扫描与抓包分析 
   使用NMAP扫描来获取指定主机/网段的相关信息
     [root@proxy ~]# yum -y install nmap
     //基本用法：
@@ -234,7 +234,7 @@
     Starting Nmap 5.51 ( http://nmap.org ) at 2017-05-17 18:03 CST
     Nmap scan report for 192.168.4.100                      //主机mail的扫描报告
     
-使用tcpdump分析FTP访问中的明文交换信息
+⚫使用tcpdump分析FTP访问中的明文交换信息
   启用tcpdump命令行抓包,执行tcpdump命令行，添加适当的过滤条件
   只抓取访问主机192.168.4.5的21端口的数据通信 ，并转换为ASCII码格式的易读文本
   这里假设，192.168.4.5主机有vsftpd服务，如果没有需要提前安装并启动服务！！！
@@ -284,10 +284,10 @@
     [root@proxy ~]# echo "tom:123456" | base64 
     dG9tOjEyMzQ1Ngo=
     
- 抓取pop3服务
+  抓取pop3服务
     [root@proxy ~]# tcpdump -i lo(网卡端口）-A（可阅读的方式） tcp port 110
     
-安装WireShark
+⚫安装WireShark
   官网:www.wireshark.org
   rhel光盘中俩个包
   -wireshark
