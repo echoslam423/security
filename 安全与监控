@@ -1,4 +1,4 @@
-chage工具
+⚫chage工具
   chage命令的语法格式：
     chage –l    账户名称                                //查看账户信息
     [root@proxy ~]# chage -l zhangsan                        //查看账户年龄信息
@@ -13,7 +13,7 @@ chage工具
     chage –E 时间 账户名称                            //修改账户有效期
     [root@proxy ~]# chage -E 2015-05-15 zhangsan      //更多选项可查询chage --help
     
-定义默认有效期  
+⚫定义默认有效期  
     /etc/login.defs这个配置文件，决定了账户密码的默认有效期。
         [root@proxy ~]# cat /etc/login.defs
           PASS_MAX_DAYS    99999                        //密码最长有效期
@@ -23,7 +23,7 @@ chage工具
           UID_MIN                  1000                //UID最小值
           UID_MAX                  60000                //UID最大值
                     
-锁定用户账号
+⚫锁定用户账号
     使用passwd或usermod命令将用户的账户锁定。
         [root@proxy ~]# passwd -l zhangsan                       //锁定用户账号lock
         锁定用户 zhangsan 的密码。
@@ -37,7 +37,7 @@ chage工具
         解锁用户 zhangsan 的密码 。
         passwd: 操作成功
 
-修改tty登录的提示信息，隐藏系统版本
+⚫修改tty登录的提示信息，隐藏系统版本
     /etc/issue这个配置文件里保存的就是这些登陆信息，修改该文件防止内核信息泄露
     [root@proxy ~]# cat /etc/issue                              //确认原始文件
       Red Hat Enterprise Linux Server release 6.5 (Santiago)
@@ -49,7 +49,7 @@ chage工具
       Windows Server 2012 Enterprise R2
       NT 6.2 Hybrid
       
-文件系统也可以通过添加额外属性来提高性能与安全性
+⚫文件系统也可以通过添加额外属性来提高性能与安全性
     [root@proxy ~]# cat /etc/fstab
       /dev/vda1   /boot    xfs   defaults,noexec   0  0
       /dev/vda3   /home    xfs   defaults,noatime  0  0
@@ -57,7 +57,7 @@ chage工具
       noexec属性可以让分区下的所有程序都不可执行，包括病毒与木马
       noatime让分区下的所有文件都不再更新atime时间，atime时间为文件的访问时间
       
-锁定文件/etc/resolv.conf、/etc/hosts
+⚫锁定文件/etc/resolv.conf、/etc/hosts
     # chattr +i  文件名                    //锁定文件（无法修改、删除等）
     # chattr -i  文件名                    //解锁文件
     # chattr +a  文件名                    //锁定后文件仅可追加
@@ -79,7 +79,7 @@ chage工具
     [root@proxy ~]# lsattr /etc/hosts
     -----a---------- /etc/hosts
     
-使用su命令临时切换账户身份  
+⚫使用su命令临时切换账户身份  
     su zhangsan       切换用户身份保持当前环境
     su - zhangsan     切换用户身份改变用户身份黄经
     su -              切换为root用户
@@ -90,7 +90,7 @@ chage工具
     [zhangsan@proxy ~]# su - -c "systemctl restart sshd"        //以管理员重启服务
       密码：
     
-用户提权
+⚫用户提权
   修改/etc/sudoers可以直接使用vim编辑该文件，或使用visudo命令修改该文件。
     [root@proxy ~]# vim /etc/sudoers            //修改文件后，需要使用wq强制保存 wq!
     .. ..
@@ -151,7 +151,7 @@ chage工具
       Cmnd_Alias SOFTMGR=/bin/rpm,/usr/bin/yum  //文件头部注释 有很多已定义好的选项
       OPERATORS  MAILSERVERS=SOFTMGR
         
-sshd的配置文件项
+⚫sshd的配置文件项
     [root@proxy ~]# vim /etc/ssh/sshd_config
     .. ..
     Port                                     //定义端口
@@ -174,7 +174,7 @@ sshd的配置文件项
     ##DenyGroups  GROUP1 GROUP2                            //定义组黑名单
     ##AllowGroups  GROUP1 GROUP2                            //定义组白名单
     
-Selinux设置
+⚫Selinux设置
  配置文件 /etc/selinux/config
  命令行设置 setenforce 0/1                       //模式切换 强制模式 宽松模式
  模式查看   getenforce
