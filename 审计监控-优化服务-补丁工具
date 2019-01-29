@@ -120,3 +120,63 @@
     [root@proxy nginx-1.12]# killall nginx
     [root@proxy nginx-1.12]# /usr/local/nginx/sbin/nginx            //启动服务
     [root@proxy nginx-1.12]# curl -I http://192.168.4.5            //查看版本信息验证
+  
+  限制并发量
+    Nginx提供了一个ngx_http_limit_req_module模块，可以有效降低DDOS攻击的风险
+    [root@proxy ~]# vim /usr/local/nginx/conf/nginx.conf
+    … …
+    http{
+    … …
+    limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
+        server {
+            listen 80;
+            server_name localhost;
+            limit_req zone=one burst=5;
+                }
+    }
+    //备注说明：
+    //limit_req_zone语法格式如下：
+    //limit_req_zone key zone=name:size rate=rate;
+    //上面案例中是将客户端IP信息存储名称为one的共享内存，内存空间为10M
+    //1M可以存储8千个IP信息，10M可以存储8万个主机连接的状态，容量可以根据需要任意调整
+    //每秒中仅接受1个请求，多余的放入漏斗
+    //漏斗超过5个则报错
+    [root@proxy ~]# /usr/local/nginx/sbin/nginx -s reload
+    
+  拒绝非法的请求
+    网站使用的是HTTP协议，该协议中定义了很多方法，可以让用户连接服务器，获得需要的资源。但实际应用中一般仅需要get和post。
+       请求方法  功能描述
+        GET     请求指定的页面信息,并返回实体主体（下载）
+        HEAD    类似于GET请求,返回没有具体内容,只获得头部信息
+        POST    向指定资源提交数据进行处理请求（例如提交表单或上传文件）
+        DELETE  请求服务器删除指定页面
+        PUT     上传
+        ...     ...
+        
+  未修改服务器配置前，客户端可使用不同请求方法
+    [root@client ~]# curl -i -X GET  http://192.168.4.5            //正常
+    [root@client ~]# curl -i -X HEAD http://192.168.4.5            //正常
+    //curl命令选项说明：
+    //-i选项：访问服务器页面时，显示HTTP的头部信息
+    //-X选项：指定请求服务器的方法
+    
+  设置可以让Nginx拒绝非法的请求方法
+    [root@proxy ~]# vim /usr/local/nginx/conf/nginx.conf
+    http{
+           server {
+                     listen 80;
+    #这里，!符号表示对正则取反，~符号是正则匹配符号
+    #如果用户使用非GET或POST方法访问网站，则retrun返回444的错误信息
+                  if ($request_method !~ ^(GET|POST)$ ) {
+                         return 444;
+                   }    
+            }
+    }
+    [root@proxy ~]# /usr/local/nginx/sbin/nginx -s reload
+    
+  测试
+    [root@client ~]# curl -i -X GET  http://192.168.4.5            //正常
+    [root@client ~]# curl -i -X HEAD http://192.168.4.5            //报错   
+        
+        
+        
