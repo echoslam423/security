@@ -287,5 +287,13 @@
  抓取pop3服务
     [root@proxy ~]# tcpdump -i lo(网卡端口）-A（可阅读的方式） tcp port 110
     
-    
+安装WireShark
+  官网:www.wireshark.org
+  rhel光盘中俩个包
+  -wireshark
+  -wireshark-gnome
+ 
+  图形界面
+   可以打开tcpdump抓取的.cap的文件
+  
     
