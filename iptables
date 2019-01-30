@@ -1,0 +1,46 @@
+安装iptables-services并启动服务
+    [root@proxy ~]# yum -y install iptables-services
+    [root@proxy ~]# systemctl start iptables.service
+
+熟悉iptables框架
+    1)iptables的4个表（区分大小写）：
+        iptables默认有4个表，nat表（地址转换表）、filter表（数据过滤表）、raw表（状态跟踪表）、mangle表（包标记表）。
+
+    2)iptables的5个链（区分大小写）：
+        INPUT链（入站规则）
+        OUTPUT链（出站规则）
+        FORWARD链（转发规则）
+        PREROUTING链（路由前规则）
+        POSTROUTING链（路由后规则）
+        
+    3) 表对应的链规则
+        nat表:PREROUTING链 OUTPUT链
+        mangle表:PREROUTING链 POSTROUTING链 INPUT链 OUTPUT链 FORWARD链
+        raw表:PREROUTING链 POSTROUTING链 OUTPUT链
+        filter表:INPUT链 OUTPUT链 FORWARD链
+          //顺序比对,匹配即停止(log除外),无匹配按照默认策略
+ 
+iptabels语法格式
+    [root@proxy ~]# iptables  [-t 表名]  选项  [链名]  [条件]  [-j 目标操作]
+    [root@proxy ~]# iptables  -t  filter  -I  INPUT -p  icmp  -j  REJECT
+    [root@proxy ~]# iptables -t filter -I  INPUT   -p  icmp  -j  ACCEPT
+    [root@proxy ~]# iptables  -I  INPUT  -p  icmp  -j  REJECT
+    //注意事项与规律：
+    //可以不指定表，默认为filter表
+    //可以不指定链，默认为对应表的所有链
+    //如果没有找到匹配条件，则执行防火墙默认规则
+    //选项/链名/目标操作用大写字母，其余都小写
+    ########################################################################
+    //目标操作：
+    // ACCEPT：允许通过/放行
+    // DROP：直接丢弃，不给出任何回应
+    // REJECT：拒绝通过，必要时会给出提示
+    // LOG：记录日志，然后传给下一条规则
+    
+iptables命令的常用选项
+    添加规则    
+    -A  添加一条规则至链的末尾               add       
+    -I  添加一条规则至链的行首               insert
+    查看规则
+    
+
