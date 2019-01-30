@@ -112,7 +112,7 @@ Tomcat安全性
     [root@proxy ~]# curl http://192.168.2.100:8080/xx
     //访问不存在的页面文件，查看错误信息
     
-降级启动tomcat
+  降级启动tomcat
   默认tomcat使用系统高级管理员账户root启动服务，启动服务尽量使用普通用户。
     [root@web1 ~]# useradd tomcat
     [root@web1 ~]# chown -R tomcat:tomcat /usr/local/tomcat/
