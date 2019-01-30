@@ -81,4 +81,46 @@
       或者也可以使用SSL对MySQL服务器进行加密，类似与HTTP+SSL一样，MySQL也支持SSL加密（确保网络中传输的数据是被加密的）
       
 Tomcat安全性
+  隐藏版本信息、修改tomcat主配置文件（隐藏版本信息）
+  未修改版本信息前，使用命令查看服务器的版本信息
+    [root@proxy ~]# curl -I http://192.168.2.100:8080/xx        
+    //访问不存在的页面文件，查看头部信息
+    [root@proxy ~]# curl -I http://192.168.2.100:8080    
+    //访问存在的页面文件，查看头部信息
+    [root@proxy ~]# curl http://192.168.2.100:8080/xx
+    //访问不存在的页面文件，查看错误信息
+    
+  修改tomcat配置文件，修改版本信息
+    [root@web1 tomcat]# yum -y install java-1.8.0-openjdk-devel    //可执行java写的.jar脚步
+    [root@web1 tomcat]# cd /usr/local/tomcat/lib/
+    [root@web1 lib]# jar -xf catalina.jar                             //jar --help
+    [root@web1 lib]# vim org/apache/catalina/util/ServerInfo.properties 
+    //根据自己的需要，修改版本信息的内容
+    [root@web1 lib]#vim /usr/local/tomcat/conf/server.xml               //网页配置文件
+      //tomcat服务器配置文件，修改版本信息，手动添加server参数
+      69 <Connector port="8080" protocol="HTTP/1.1"             
+                 connectionTimeout="20000"
+                redirectPort="8443" server="joker"/>
+    [root@web1 lib]# /usr/local/tomcat/bin/shutdown.sh        //关闭服务
+    [root@web1 lib]# /usr/local/tomcat/bin/startup.sh        //启动服务
   
+  查看结果
+    [root@proxy ~]# curl -I http://192.168.2.100:8080/xx        
+    //访问不存在的页面文件，查看头部信息
+    [root@proxy ~]# curl -I http://192.168.2.100:8080    
+    //访问存在的页面文件，查看头部信息
+    [root@proxy ~]# curl http://192.168.2.100:8080/xx
+    //访问不存在的页面文件，查看错误信息
+    
+降级启动tomcat
+  默认tomcat使用系统高级管理员账户root启动服务，启动服务尽量使用普通用户。
+    [root@web1 ~]# useradd tomcat
+    [root@web1 ~]# chown -R tomcat:tomcat /usr/local/tomcat/
+    //修改tomcat目录的权限，让tomcat账户对该目录有操作权限
+    [root@web1 ~]# su -c /usr/local/tomcat/bin/startup.sh tomcat
+    //使用su命令切换为tomcat账户，以tomcat账户的身份启动tomcat服务
+    [root@web1 ~]# chmod +x /etc/rc.local                //该文件为开机启动文件
+    [root@web1 ~]# vim /etc/rc.local                     //修改文件，添加如下内容
+    su -c /usr/local/tomcat/bin/startup.sh tomcat
+    
+    
