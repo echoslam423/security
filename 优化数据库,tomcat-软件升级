@@ -138,6 +138,7 @@ Tomcat安全性
                     //补丁信息会说明如何从空文件修改成txt文件,打补丁即可成功
    
   使用diff对比文件差异
+    环境准备
     编写两个版本的脚本，一个为v1版本，一个为v2版本
       [root@proxy ~]# cat test1.sh                                //v1版本脚本
       #!/bin/bash
@@ -181,3 +182,48 @@ Tomcat安全性
       //-R(reverse)反向修复，-E修复后如果文件为空，则删除该文件
       [root@proxy demo]# patch -RE < test.patch                     //还原旧版本，反向修复
 
+  对比目录中所有文件的差异
+    准备实验环境
+      [root@proxy ~]# mkdir demo
+      [root@proxy ~]# cd demo
+      [root@proxy demo]# mkdir {source1,source2}
+      [root@proxy demo]# echo "hello world"       > source1/test.sh
+      [root@proxy demo]# cp /bin/find source1/
+      [root@proxy demo]#  tree source1/                         //tree软件用树形结构查看目录 yum -y install tree
+                                                                //source1目录下2个文件
+      |-- find
+      `-- test.sh
+      [root@proxy demo]# echo "hello the world"  > source2/test.sh
+      [root@proxy demo]# echo "test" > source2/tmp.txt
+      [root@proxy demo]# cp /bin/find source2/
+      [root@proxy demo]# echo "1" >> source2/find 
+      [root@proxy demo]#  tree source2/                        //source1目录下3个文件
+      |-- find
+      |-- test.sh
+      `-- tmp.txt
+        //注意：两个目录下find和test.sh文件内容不同，source2有tmp.txt而source1没有该文件
+        
+    制作补丁文件 
+      [root@proxy demo]# diff -u source1/ source2/
+      //仅对比了文本文件test.sh；二进制文件、tmp都没有对比差异，仅提示，因为没有-a和-N选项
+      [root@proxy demo]# diff -Nu source1/ source2/
+      //对比了test.sh，并且使用source2目录的tmp.txt与source1的空文件对比差异。
+      [root@proxy demo]# diff -Nua source1/ source2/
+      //对比了test.sh、tmp.txt、find(程序)
+      [root@proxy ~]# cd demo
+      [root@proxy demo]# diff -Nuar source1/ source2/ > source.patch
+      
+    使用patch命令为代码打补丁  
+      [root@proxy demo]# ls
+      source1  source2  source.patch
+      [root@proxy demo]# cat source.patch                //对比的文件有路径信息
+      --- source1/test.sh 2018-02-07 22:51:33.034879417 +0800
+      +++ source2/test.sh 2018-02-07 22:47:32.531754268 +0800
+      @@ -1 +1 @@
+      -hello world
+      +hello the world
+      [root@proxy demo]# cd source1
+      [root@proxy source1]# patch  -p1 < ../source.patch
+      
+      
+      
