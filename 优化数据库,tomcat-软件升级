@@ -174,7 +174,7 @@ Tomcat安全性
       [root@proxy demo]# yum -y install patch
       [root@proxy demo]# patch -p0 < test.patch                    //打补丁
       patching file test1.sh                                      //选项 -i PATCHFILE  --input=PATCHFILE
-      //patch -pnum（其中num为数字，指定删除补丁文件中多少层路径前缀） 补丁存放路径-打补丁文件的路径(head -2 补丁) 目录层级的差值
+      //patch -pnum（其中num为数字，指定删除补丁文件中多少层路径前缀） 
       //如原始路径为/u/howard/src/blurfl/blurfl.c
       //-p0则整个路径不变
       //-p1则修改路径为u/howard/src/blurfl/blurfl.c
@@ -225,7 +225,7 @@ Tomcat安全性
       [root@proxy demo]# cd source1
       [root@proxy source1]# patch  -p1 < ../source.patch       
       
-      //patch -pnum（其中num为数字，指定删除补丁文件中多少层路径前缀） 补丁存放路径-打补丁文件的路径(head -2 补丁) 目录曾级的差值
+      //patch -pnum（其中num为数字，指定删除补丁文件中多少层路径前缀） head -2 补丁文件 查看多少层
       
       
       
