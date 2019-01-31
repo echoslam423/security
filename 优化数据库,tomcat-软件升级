@@ -225,7 +225,7 @@ Tomcat安全性
       [root@proxy demo]# cd source1
       [root@proxy source1]# patch  -p1 < ../source.patch       
       
-      //patch -pnum（其中num为数字，指定删除补丁文件中多少层路径前缀） head -2 补丁文件 查看多少层
+      //patch -pnum（其中num为数字，指定删除补丁文件中多少层路径前缀） head -2 补丁文件与打 查看多少层  与打补丁所在位置 比较出num
       
       
       
