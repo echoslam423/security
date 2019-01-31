@@ -4,7 +4,7 @@
 
 熟悉iptables框架
     1)iptables的4个表（区分大小写）：
-        iptables默认有4个表，nat表（地址转换表）、filter表（数据过滤表）、raw表（状态跟踪表）、mangle表（包标记表）。
+        iptables默认有4个表，nat表（地址转换表）、filter[过滤器]表（数据过滤表）、raw表（状态跟踪表）、mangle表（包标记表）。
 
     2)iptables的5个链（区分大小写）：
         INPUT链（入站规则）
@@ -49,10 +49,81 @@ iptables命令的常用选项
     
     删除规则
     -D  删除链内指定序号（或内容）的一条规则     #delete
-    -F  清除所有规则                         #flush
+    -F  清除所有规则                         #flush          //命令行只能临时清楚 永久生效/etc/sysconfig/iptables
+                                               //iptables-save > /etc/sysconfig/iptables 
     
     默认规则
     -P  为指定的链设置默认规则                 #print
+ 
+ 基本的目标操作
+    ACCEPT(接受):允许通过
+    DROP(放弃):直接丢弃,不给予回应
+    REJECT（拒绝）:拒绝通过,必要时给予回应
+    LOG(日志):记录日志
+ 
+ 
+ 创建规则的案例
+    [root@proxy ~]# iptables  -t  filter  -A  INPUT  -p tcp  -j  ACCEPT
+        //追加规则至filter表中的INPUT链的末尾，允许任何人使用TCP协议访问本机  
+        //-p protocol  protocol: by number or name eg, tcp
+    [root@proxy ~]# iptables  -I  INPUT  -p  udp  -j  ACCEPT
+        //插入规则至filter表中的INPUT链的开头，允许任何人使用UDP协议访问本机
+        //-j  --jump	-j target for rule  目标操作 目标规则
+    [root@proxy ~]# iptables  -I  INPUT 2  -p  icmp  -j  ACCEPT
+        //插入规则至filter表中的INPUT链的第2行，允许任何人使用ICMP协议访问本机
+        // -s source 源地址 
+        //--dport 22 destionation-port 目标端口或端口范围指定
+        
+ 查看iptables防火墙规则 
+    [root@proxy ~]# iptables  -nL  INPUT                    //仅查看INPUT链的规则
+    target     prot opt source               destination
+    ACCEPT     udp  --  0.0.0.0/0            0.0.0.0/0
+    ACCEPT     icmp --  0.0.0.0/0            0.0.0.0/0
+    ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0
+    [root@proxy ~]# iptables  -L  INPUT  --line-numbers        //查看规则，显示行号
+    num  target     prot opt source         destination
+    1    ACCEPT     udp   --  anywhere     anywhere
+    2    ACCEPT     icmp --   anywhere     anywhere
+    3    ACCEPT     tcp  --   anywhere     anywhere
     
+ 删除规则，清空所有规则
+    [root@proxy ~]# iptables  -D  INPUT  3
+    //删除filter表中INPUT链的第3条规则
+    [root@proxy ~]# iptables  -nL  INPUT                //查看规则，确认是否删除
+    [root@proxy ~]# iptables  -F
+    //清空filter表中所有链的防火墙规则
+    [root@proxy ~]# iptables  -t  nat  -F
+    //清空nat表中所有链的防火墙规则
+    [root@proxy ~]# iptables  -t  mangle  -F
+    //清空mangle表中所有链的防火墙规则
+    [root@proxy ~]# iptables  -t  raw  -F
+    //清空raw表中所有链的防火墙规则
     
-
+ 设置防火墙默认规则
+    [root@proxy ~]# iptables  -t  filter  -P  INPUT  DROP
+    [root@proxy ~]# iptables  -nL
+    Chain INPUT (policy DROP)
+    … …
+    
+filter过滤和转发控制
+ 根据防火墙保护的对象不同，防火墙可以分为主机型防火墙与网络型防火墙
+    a主机型防火墙，主要保护的是服务器本机（过滤威胁本机的数据包）
+    b网络防火墙，主要保护的是防火墙后面的其他服务器，如web服务器、FTP服务器等
+ 
+ 开启内核IP转发（主机路由功能）
+    echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
+    echo 1 >/proc/sys/net/ipv4/ip_forward
+    
+ 基本匹配条件(!为取反条件)
+    通用匹配  
+        协议匹配      -p 协议名                       //protocol
+        地址匹配      -s 源地址 -d 目标地址            //source destination
+        接口匹配      -i 收数据网卡 -o 发数据网卡       //input output 
+        
+    隐含匹配
+        端口匹配      --sport   --dport              //source|destination + port
+        ICMP类型匹配  --icmp-type                    //ICMP类型
+        ICMP是（Internet Control Message Protocol）Internet控制报文协议
+        它是TCP/IP协议族的一个子协议，用于在IP主机、路由器之间传递控制消息
+        
+  
