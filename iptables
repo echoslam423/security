@@ -156,8 +156,16 @@ filter过滤和转发控制
         //当本机ping其他主机，其他主机回应也是使用icmp，对方的回应被丢弃
   
   禁止其他主机ping本机，允许本机ping其他主机
+       需要确认  IN/OUT put 链  与 链下的默认规则 决定 答复 与请求的规则
     [root@proxy ~]# iptables  -A  INPUT  -p icmp --icmp-type echo-request  -j  DROP
-    //仅禁止入站的ping请求，不拒绝入站的ping回应包
+                // 等同于iptables  -A  OUTPUT -p icmp  --icmp-type echo-reply -j DROP
+                //仅禁止入站的ping请求，不拒绝入站的ping回应包
+    [root@proxy ~]# iptables  -A  INPUT  -p icmp ! --icmp-type echo-request  -j  ACCEPT //取反的栗子
+    
+    当INPUT链的默认规则为Drop
+    [root@proxy ~]# iptables -t filter -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
     
   关于ICMP的类型，可以参考help帮助
     [root@proxy ~]# iptables -p icmp --help
+    --icmp-type echo-request 请求  reply 答复
+    
