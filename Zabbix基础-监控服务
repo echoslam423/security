@@ -153,9 +153,10 @@
     [root@zabbixserver ~]# vim /usr/local/etc/zabbix_agentd.conf
     Server=127.0.0.1,192.168.2.5                    //允许哪些主机监控本机
     ServerActive=127.0.0.1,192.168.2.5                //允许哪些主机通过主动模式监控本机
-    Hostname=zabbix_server                        //设置本机主机名
+    Hostname=zabbix_client_web1                        //设置本机主机名
     LogFile=/tmp/zabbix_server.log                    //设置日志文件
     UnsafeUserParameters=1                        //是否允许自定义key
+    EnableRemoteCommands=1                              //监控异常时是否允许服务器远程来执行命令
     [root@zabbixserver ~]# zabbix_agentd            //启动监控agent
     [root@zabbixserver ~]# ss -ntulp |grep zabbix_agentd   //查看端口信息为10050
     tcp    LISTEN     0      128       *:10050                 *:*                   
