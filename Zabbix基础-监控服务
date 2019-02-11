@@ -212,3 +212,20 @@
     [root@zabbixclient_web1 zabbix-3.4.4]# /etc/init.d/zabbix_agentd restart
     
 配置及使用Zabbix监控系统
+    添加监控主机
+      通过configuration->host->creathost  // 配置-主机-创建主机 
+      根据提示输入
+        hostname
+        visiblename
+        groups in groups
+        IPaddress
+        其他默认
+        
+    选择监控模版
+      templates 选项卡
+      link new templates , select选择添加模版
+      
+    查看监控数据
+      monitoring-> last data  //监测中->最新数据
+      过滤器中选择条件
+      找到需要的数据点击graph  //点击后面的图形
