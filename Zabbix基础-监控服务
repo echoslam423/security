@@ -1,4 +1,7 @@
 使用命令查看计算机状态数据
+  traceroute            //路由跟踪
+  iostat                //读写数据状态
+  
  查看内存与交换分区信息
     [root@proxy ~]# free                                     //查看内存信息
                   total        used        free      shared  buff/cache   available
