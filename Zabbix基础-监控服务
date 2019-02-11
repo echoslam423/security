@@ -229,3 +229,32 @@
       monitoring-> last data  //监测中->最新数据
       过滤器中选择条件
       找到需要的数据点击graph  //点击后面的图形
+   
+客户端自定义监控
+  客户端配置
+    启动自定义监控项
+    [root@zabbixclient_web1 ~]# vim /usr/local/etc/zabbix_agentd.conf
+    265 Include=/usr/local/etc/zabbix_agentd.conf.d/*.conf
+    280 UnsafeUserParameters=1                                 //是否允许自定义key监控
+    
+    定义监控命令
+    [root@zabbixclient_web1 ~]# vim /usr/local/etc/zabbix_agentd.conf.d/x.conf
+    UserParameter=<key>,<shell command>
+                  get_sum_user,wc -l /etc/passwd | awk 'pritny $1'
+    重启zabbix-agentd服务
+       /etc/init.d/zabbix_agentd restart
+       
+    测试定义监控命令
+      useradd yy100
+      /usr/local/zabbix/bin/zabbix_get -s 127.0.0.1 -p 10050 -k get_sum_user     //主机 端口 调用命令
+      
+  监控服务器
+    测试客户端定义监控命令
+    [root@zabbixServer ~]# zabbix_get -s 192.168.2.100 -p 10050 -k get_sum_users
+    
+    创建模版--创建应用集--创建监控项
+                         key值 填写自定义key值
+    指定监控命令--调用新创建监控模版--查看监控信息
+    
+    
+    
