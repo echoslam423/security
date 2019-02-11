@@ -81,8 +81,8 @@
     
   b)源码安装Zabbix
     源码编译前需要先安装相关依赖包
-    [root@zabbixserver lnmp_soft]# yum -y install  net-snmp-devel \
-    > curl-devel 
+    [root@zabbixserver lnmp_soft]# yum -y install  net-snmp-devel //简单网络管理协议  \
+    > curl-devel  //curl 支持zabbix
     //安装相关依赖包
     [root@zabbixserver lnmp_soft]# yum -y install  \
     > libevent-devel-2.0.21-4.el7.x86_64.rpm
@@ -134,6 +134,15 @@
     [root@zabbixserver ~]# useradd -s /sbin/nologin zabbix
     //不创建用户无法启动服务
     [root@zabbixserver ~]# zabbix_server                      //启动服务
+    // 安装过程中指定路径安装 --perfix=   可以用脚本实现启动程序
+       [root@zabbixServer sbin]# cd /root/Zabbix/zabbix-3.4.4/misc/init.d/fedora/core/
+       [root@zabbixServer core]# ls
+        zabbix_agentd  zabbix_server
+       [root@zabbixServer core]# cp zabbix_server /etc/init.d/
+       [root@zabbixServer core]# chmod +x /etc/init.d/zabbix_server 
+       [root@zabbixServer core]# sed '22s;/usr/local;prefix指定的安装路径;' /etc/init.d/zabbix_server
+       脚本实现功能{start|stop|status|restart|help}
+    
     [root@zabbixserver ~]# ss -ntulp |grep zabbix_server     //确认连接状态，端口10051
     tcp LISTEN 0 128 *:10051 *:* users:(("zabbix_server",pid=23275,fd=4),("zabbix_server",pid=23274,fd=4)
         //如果是因为配置文件不对，导致服务无法启动时，不要重复执行zabbix_server，
