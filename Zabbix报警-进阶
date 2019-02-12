@@ -240,7 +240,7 @@ Zabbix主动监控
               curl -s http://192.168.2.100/status |awk 'NR==3{print $2}';;
             esac
         [root@zabbixclient_web1 ~]# chmod +x  /usr/local/bin/nginx_status.sh
-        [root@zabbixclient_web1 ~]# zabbix_get  -s 127.0.0.1 \
+        [root@zabbixclient_web1 ~]# zabbix_get  -s 127.0.0.1  -p 10050 \
             -k 'nginx.status[accepts]'
         
         登陆Zabbix监控Web，创建监控项目item，点击Configuration（配置）-->Hosts(主机)，
