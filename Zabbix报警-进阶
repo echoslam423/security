@@ -205,10 +205,11 @@ Zabbix主动监控
               }
       … …
       [root@zabbixclient_web1 ~]# curl  http://192.168.2.100/status
-      Active connections: 1 
+      Active connections: 1  实时连接数量
       server accepts handled requests
-      10 10 3 
-      Reading: 0 Writing: 1 Waiting: 0
+      10 10 3  历史连接数 处理连接数量 处理请求数量
+      Reading: 0 Writing: 1 Waiting: 0  
+      正在接收的  正在处理的   正在等待的连接访问
       
     2）自定义监控key 
       语法格式：
