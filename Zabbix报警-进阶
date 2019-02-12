@@ -101,3 +101,59 @@ Zabbix自动发现
     2）验证结果
         登陆Zabbix服务器的Web页面，查看主机列表，确认新添加的主机是否被自动加入监控主机列表，
         是否自动绑定了监控模板。
+
+Zabbix主动监控
+  方案:默认zabbix采用的是被动监控，主动和被动都是对被监控端主机而言的！
+    被动监控：Server向Agent发起连接，发送监控key，Agent接受请求，响应监控数据。
+    主动监控：Agent向Server发起连接，Agent请求需要检测的监控项目列表，Server响应Agent发送一个items列表，
+    Agent确认收到监控列表，TCP连接完成，会话关闭，Agent开始周期性地收集数据。
+
+  区别：Server不用每次需要数据都连接Agent，Agent会自己收集数据并处理数据，Server仅需要保存数据即可。
+  当监控主机达到一定量级后，Zabbix服务器会越来越慢，此时，可以考虑使用主动监控，释放服务器的压力。
+  另外，Zabbix也支持分布式监控，也是可以考虑的方案。
+
+  步骤一：添加被监控主机
+    1）为被监控主机安装部署zabbix agent   
+      [root@zabbixclient_web2 ~]# yum -y install gcc pcre-devel
+      [root@zabbixclient_web2 ~]# tar -xf zabbix-3.4.4.tar.gz 
+      [root@zabbixclient_web2 ~]# cd zabbix-3.4.4/
+      [root@zabbixclient_web2 ~]#./configure --enable-agent
+      [root@zabbixclient_web2 ~]# make && make install
+      
+    2）修改agent配置文件
+      [root@zabbixclient_web2 ~]# vim /usr/local/etc/zabbix_agentd.conf 
+      #Server=127.0.0.1,192.168.2.5
+        //注释该行，允许谁监控本机
+      StartAgents=0            
+        //被动监控时启动多个进程
+        //设置为0，则禁止被动监控，不启动zabbix_agentd服务
+      ServerActive=192.168.2.5
+        //允许哪些主机监控本机（主动模式），一定要取消127.0.0.1
+      Hostname=zabbixclient_web2
+        //告诉监控服务器，是谁发的数据信息
+        //一定要和zabbix服务器配置的监控主机名称一致（后面设置）
+      RefreshActiveChecks=120
+        //默认120秒检测一次
+      UnsafeUserParameters=1            
+        //允许自定义key
+      Include=/usr/local/etc/zabbix_agentd.conf.d/
+      [root@zabbixclient_web2 ~]# killall zabbix_agentd                    //关闭服务
+      [root@zabbixclient_web2 ~]# zabbix_agentd                            //启动服务
+      
+  步骤二：创建主动监控的监控模板
+    1）克隆Zabbix自动的监控模板
+      克隆系统自带模板（在此基础上就该更方便）。
+      通过Configuration（配置）-->Templates（模板）-->选择Template OS Linux-->全克隆，克隆该模板，新建一个新的模板
+      新模板名称为：Template OS Linux ServerActive
+      
+    2）修改模板中的监控项目的
+      将模板中的所有监控项目全部修改为主动监控模式，通过Configuration（配置）-->Templates（模板）-->选择新克隆的模板，
+      点击后面的Items（监控项）-->点击全选，选择所有监控项目，点击批量更新，将类型修改为：Zabbix Agent（Active主动模式）  
+      
+    3）禁用部分监控项目监控模式
+      批量修改监控项的监控模式后，并非所有监控项目都支持主动模式，批量修改后，会发现有几个没有修改主动模式成功，
+      说明，这些监控项目不支持主动模式，关闭即可。可以点击类型排序，方便操作，点击状态即可关闭。
+      
+  步骤三：添加监控主机
+    1）手动添加监控主机（主动模式监控）
+    2）验证监控效果
